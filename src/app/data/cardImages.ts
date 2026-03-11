@@ -16,6 +16,7 @@ import imgHighPriestess from "../../assets/tarot-high-priestess.png";
 import imgHermit        from "../../assets/tarot-hermit.png";
 import imgMagician      from "../../assets/tarot-magician.png";
 import imgEmpress       from "../../assets/tarot-empress.png";
+import imgMoon          from "../../assets/tarot-moon.png";
 
 /**
  * Maps a card id (matching MAJOR_ARCANA[n].id) to its illustration asset.
@@ -37,6 +38,7 @@ export const CARD_IMAGES: Record<number, string> = {
   15: imgDevil,          // The Devil          — XV
   16: imgTower,          // The Tower          — XVI
   17: imgStar,           // The Star           — XVII
+  18: imgMoon,           // The Moon           — XVIII
   19: imgSun,            // The Sun            — XIX
   20: imgJudgement,      // Judgement          — XX
   21: imgWorld,          // The World          — XXI
