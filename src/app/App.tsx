@@ -12,7 +12,6 @@ import { CardReflectionScreen } from "./components/screens/CardReflectionScreen"
 import { MAJOR_ARCANA, TarotCard, ApiTarotCard } from "./data/cards";
 import { appendHistory, loadHistory } from "./data/history";
 import { getPlaceholderReflection, getPlaceholderQuestion } from "./data/reflections";
-import { fetchWithProxy } from "./utils/fetchWithProxy";
 
 type Screen =
   | "splash"
@@ -94,24 +93,20 @@ export default function App() {
   const [horoscopeText, setHoroscopeText] = useState<string | null>(null);
   const [tarotLoading, setTarotLoading] = useState(true);
   const [horoscopeLoading, setHoroscopeLoading] = useState(false);
-  // Combined: shimmer shows while either upstream API is in-flight
   const apiTarotLoading = tarotLoading || horoscopeLoading;
 
   // Fetch Major Arcana card data once on mount
   useEffect(() => {
     const controller = new AbortController();
-    // Timeout: give up after 10 s and fall back to placeholders
     const timeout = setTimeout(() => controller.abort(), 10_000);
 
-    fetchWithProxy(
-      "https://tarot-api-3hv5.onrender.com/api/v1/cards?type=major",
-      controller.signal
-    )
+    fetch("/api/tarot", { signal: controller.signal })
+      .then((res) => res.json())
       .then((data) => {
         const d = data as { cards: ApiTarotCard[] };
         if (Array.isArray(d?.cards)) setApiTarotCards(d.cards);
       })
-      .catch(() => {/* silently fall back */})
+      .catch(() => {})
       .finally(() => { clearTimeout(timeout); setTarotLoading(false); });
 
     return () => { controller.abort(); clearTimeout(timeout); };
@@ -124,15 +119,13 @@ export default function App() {
     const timeout = setTimeout(() => controller.abort(), 10_000);
     setHoroscopeLoading(true);
 
-    fetchWithProxy(
-      `https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily?sign=${zodiacSign.toLowerCase()}&day=TODAY`,
-      controller.signal
-    )
+    fetch(`/api/horoscope?sign=${zodiacSign.toLowerCase()}`, { signal: controller.signal })
+      .then((res) => res.json())
       .then((data) => {
         const d = data as { data?: { horoscope_data?: string } };
         setHoroscopeText(d?.data?.horoscope_data ?? "");
       })
-      .catch(() => setHoroscopeText("")) // empty string → Groq will still run
+      .catch(() => setHoroscopeText(""))
       .finally(() => { clearTimeout(timeout); setHoroscopeLoading(false); });
 
     return () => { controller.abort(); clearTimeout(timeout); };
@@ -161,7 +154,6 @@ export default function App() {
         localStorage.removeItem("tarot_today");
         setDrawnCard(null);
         setIsChangingSign(false);
-        // Re-fetch horoscope for the new sign (reset to trigger useEffect)
         setHoroscopeText(null);
         setHoroscopeLoading(false);
       }
@@ -177,7 +169,6 @@ export default function App() {
   const handleCardPicked = useCallback(
     (card: TarotCard) => {
       setDrawnCard(card);
-      // Save reading to history immediately (skip on return visits)
       if (zodiacSign && !isReturnVisit.current) {
         const today = new Date().toDateString();
         const entry = {
@@ -197,22 +188,19 @@ export default function App() {
     [navigateTo, zodiacSign]
   );
 
-  /** Tap zodiac icon → go to birthdate screen to change sign */
   const handleChangeSign = useCallback(() => {
     changeSignReturnScreen.current = screen;
     setIsChangingSign(true);
     navigateTo("birthdate");
   }, [screen, navigateTo]);
 
-  /** X button → cancel, go back to where the user was */
   const handleCancelChangeSign = useCallback(() => {
     setIsChangingSign(false);
     navigateTo(changeSignReturnScreen.current);
   }, [navigateTo]);
 
   const isReflection = screen === "card-reflection";
-  const showArchiveIcon =
-    hasHistory && showZodiacIcon && screen !== "birthdate";
+  const showArchiveIcon = hasHistory && showZodiacIcon && screen !== "birthdate";
 
   // ── Mouse sparkle trail ──────────────────────────────────────────────────
   useEffect(() => {
@@ -224,10 +212,10 @@ export default function App() {
       if (now - lastSpawn < 60) return;
       lastSpawn = now;
 
-      const size = Math.random() * 5 + 3; // 3–8 px
+      const size = Math.random() * 5 + 3;
       const color = COLORS[Math.floor(Math.random() * COLORS.length)];
       const half = size / 2;
-      const jitter = () => (Math.random() - 0.5) * 16; // −8 to +8
+      const jitter = () => (Math.random() - 0.5) * 16;
 
       const el = document.createElement("div");
       el.style.cssText = [
@@ -296,12 +284,10 @@ export default function App() {
     >
       <Background />
 
-      {/* ── Unified top bar: zodiac badge (left) + archive icon (right) ── */}
       <div
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between"
         style={{ padding: "16px 24px", pointerEvents: "none" }}
       >
-        {/* Left slot */}
         <div style={{ pointerEvents: "auto" }}>
           {isChangingSign && screen === "birthdate" ? (
             <button
@@ -333,7 +319,6 @@ export default function App() {
           )}
         </div>
 
-        {/* Right slot: archive icon */}
         <div style={{ pointerEvents: "auto" }}>
           <button
             onClick={() => setShowHistory(true)}
@@ -354,7 +339,6 @@ export default function App() {
             title="Past readings"
           >
             <span
-              className="animate-zodiac-glow"
               style={{
                 fontSize: "28px",
                 color: "#C9933A",
@@ -368,12 +352,9 @@ export default function App() {
           </button>
         </div>
       </div>
-      {/* ──────────────────────────────────────────────────────────────── */}
 
-      {/* History overlay */}
       {showHistory && <HistoryOverlay onClose={() => setShowHistory(false)} />}
 
-      {/* Screen wrapper */}
       <div
         className={`relative z-10 w-full screen-fade ${
           isReflection
