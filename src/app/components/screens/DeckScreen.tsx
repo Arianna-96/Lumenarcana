@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { TarotCard } from "../../data/cards";
-import imgCardBack from "../../../assets/card-back.png";
+import imgCardBack from "../../../assets/card-back.jpg";
 
 interface DeckScreenProps {
   onCardPicked: (card: TarotCard) => void;
