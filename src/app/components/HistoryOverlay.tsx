@@ -283,7 +283,7 @@ function ReadingsTab({ entries }: { entries: HistoryEntry[] }) {
           key={`${entry.date}-${entry.cardId}-${i}`}
           style={{ display: "flex", flexDirection: "column", gap: "18px", maxWidth: "640px", width: "100%", margin: "0 auto" }}
         >
-          <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: "10px", color: "#C9933A", letterSpacing: "0.28em", textTransform: "uppercase", opacity: 0.58 }}>
+          <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: "12px", color: "#C9933A", letterSpacing: "0.28em", textTransform: "uppercase", opacity: 0.58 }}>
             {formatDate(entry.date)}
           </span>
 
@@ -296,15 +296,15 @@ function ReadingsTab({ entries }: { entries: HistoryEntry[] }) {
             </span>
           </div>
 
-          <p style={{ fontFamily: "'Italiana', serif", fontSize: "clamp(15px, 2.3vw, 19px)", color: "#F0EEF8", lineHeight: 1.92, fontStyle: "italic", fontWeight: 400, margin: 0 }}>
+          <p style={{ fontFamily: "'Italiana', serif", fontSize: "clamp(15px, 2.3vw, 18px)", color: "#F0EEF8", lineHeight: 1.92, fontStyle: "italic", fontWeight: 400, margin: 0 }}>
             {entry.reflection}
           </p>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "7px" }}>
-            <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: "9px", color: "#C9933A", letterSpacing: "0.28em", textTransform: "uppercase", opacity: 0.68 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: "12px", color: "#C9933A", letterSpacing: "0.28em", textTransform: "uppercase", opacity: 0.68 }}>
               A question for you
             </span>
-            <p style={{ fontFamily: "'Raleway', sans-serif", fontSize: "clamp(13px, 1.8vw, 15px)", color: "rgba(240,238,248,0.42)", lineHeight: 1.85, fontStyle: "italic", fontWeight: 300, letterSpacing: "0.02em", margin: 0 }}>
+            <p style={{ fontFamily: "'Raleway', sans-serif", fontSize: "clamp(13px, 1.8vw, 16px)", color: "rgba(240,238,248,0.42)", lineHeight: 1.85, fontStyle: "italic", fontWeight: 300, letterSpacing: "0.02em", margin: 0 }}>
               {entry.question}
             </p>
           </div>
@@ -386,7 +386,7 @@ export function HistoryOverlay({ onClose }: { onClose: () => void }) {
         onClick={() => setTab(t)}
         style={{
           fontFamily: "'Raleway', sans-serif",
-          fontSize: "10px",
+          fontSize: "12px",
           color: active ? "#C9933A" : "rgba(160,156,192,0.4)",
           letterSpacing: "0.28em",
           textTransform: "uppercase" as const,
