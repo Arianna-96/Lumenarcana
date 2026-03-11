@@ -140,7 +140,7 @@ export function DeckScreen({ onCardPicked, availableCards }: DeckScreenProps) {
 
       <div
         className="flex flex-col items-center justify-center gap-16 px-6"
-        style={{ animation: "fade-in-up 1200ms ease-in-out forwards" }}
+        style={{ animation: "fade-in-up 1200ms ease-in-out forwards", paddingTop: "80px" }}
       >
         <div style={{ position: "relative" }}>
 
