@@ -1,6 +1,6 @@
 import svgPaths from "./svg-l1m6bxm83b";
-import imgNoiseTexture from "figma:asset/06fee90265c62de6a6e3fb89b341c45b439a08b9.png";
-import imgNoiseTexture1 from "figma:asset/b42f23b75535bf4f39dd7f3cc65c12c590b2d488.png";
+import imgNoiseTexture from "../assets/noise-texture.png";
+import imgNoiseTexture1 from "../assets/noise-texture-2.png";
 
 function BgHs() {
   return (

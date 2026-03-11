@@ -1,8 +1,8 @@
 import svgPaths from "./svg-4iu9virxhl";
-import imgNoiseTexture from "figma:asset/06fee90265c62de6a6e3fb89b341c45b439a08b9.png";
-import imgNoiseTexture1 from "figma:asset/b42f23b75535bf4f39dd7f3cc65c12c590b2d488.png";
-import imgGeminiGeneratedImage7578Uk7578Uk75782 from "figma:asset/89a25bd313de2c5f9f6ed86cc70834000108cb8c.png";
-import imgImage2 from "figma:asset/5889b14e3375786a31e16aba6613479e691a6099.png";
+import imgNoiseTexture from "../assets/noise-texture.png";
+import imgNoiseTexture1 from "../assets/noise-texture-2.png";
+import imgGeminiGeneratedImage7578Uk7578Uk75782 from "../assets/card-back-alt.png";
+import imgImage2 from "../assets/zodiac-leo.png";
 
 function BgHs() {
   return (

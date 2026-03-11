@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { TarotCard } from "../../data/cards";
-import imgCardBack from "figma:asset/7133d78ef8afb52858f4e053f0468225d2216220.png";
+import imgCardBack from "../../../assets/card-back.png";
 
 interface DeckScreenProps {
   onCardPicked: (card: TarotCard) => void;

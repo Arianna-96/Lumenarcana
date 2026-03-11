@@ -3,7 +3,7 @@ import { TarotCard, ApiTarotCard } from "../../data/cards";
 import { getPlaceholderReflection, getPlaceholderQuestion } from "../../data/reflections";
 import { updateHistoryEntry } from "../../data/history";
 import { CARD_IMAGES } from "../../data/cardImages";
-import imgCardBack from "figma:asset/7133d78ef8afb52858f4e053f0468225d2216220.png";
+import imgCardBack from "../../../assets/card-back.png";
 
 type Phase = "back" | "flipping" | "front" | "settling" | "settled";
 
