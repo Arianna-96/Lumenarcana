@@ -19,6 +19,7 @@ export function IntroScreen({ onComplete, isReturning = false, sign }: IntroScre
       {isReturning ? (
         <>
           <p
+            className="intro-title"
             style={{
               fontFamily: "'Italiana', serif",
               fontSize: "clamp(22px, 4vw, 38px)",
@@ -34,6 +35,7 @@ export function IntroScreen({ onComplete, isReturning = false, sign }: IntroScre
             Welcome back, {sign}.
           </p>
           <p
+            className="intro-subtitle"
             style={{
               fontFamily: "'Raleway', sans-serif",
               fontSize: "clamp(14px, 2vw, 18px)",
@@ -50,6 +52,7 @@ export function IntroScreen({ onComplete, isReturning = false, sign }: IntroScre
         </>
       ) : (
         <p
+          className="intro-title"
           style={{
             fontFamily: "'Italiana', serif",
             fontSize: "clamp(22px, 4vw, 38px)",
