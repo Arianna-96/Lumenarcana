@@ -257,10 +257,10 @@ export function CardReflectionScreen({
           </div>
 
           <div className="flex flex-col items-center gap-2">
-            <p className="reflection-footer-primary" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "13px", color: "#A09CC0", letterSpacing: "0.1em", textAlign: "center", fontWeight: 300, margin: 0 }}>
+            <p className="reflection-footer-primary" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "14px", color: "#A09CC0", letterSpacing: "0.1em", textAlign: "center", fontWeight: 300, margin: 0 }}>
               Carry this with you today.
             </p>
-            <p className="reflection-footer-secondary" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "13px", color: "rgba(160,156,192,0.38)", letterSpacing: "0.08em", textAlign: "center", fontWeight: 300, margin: 0 }}>
+            <p className="reflection-footer-secondary" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "14px", color: "rgba(160,156,192,0.80)", letterSpacing: "0.08em", textAlign: "center", fontWeight: 300, margin: 0 }}>
               {isReturnVisit ? "Come back tomorrow for a new reading 🌙" : "We'll be here again tomorrow. 🌙"}
             </p>
           </div>
