@@ -63,6 +63,26 @@ export function CardReflectionScreen({
   useEffect(() => {
     if (apiTarotLoading) return;
 
+    // ── Check localStorage cache first ──
+    const today = new Date().toDateString();
+    try {
+      const cached = localStorage.getItem("tarot_today");
+      if (cached) {
+        const parsed = JSON.parse(cached) as {
+          date: string;
+          cardId: number;
+          reflection?: string;
+          question?: string;
+        };
+        if (parsed.date === today && parsed.reflection && parsed.question) {
+          setGroqResult({ reflection: parsed.reflection, question: parsed.question });
+          setGroqLoading(false);
+          return;
+        }
+      }
+    } catch {}
+
+    // ── No cache — call Groq ──
     let cancelled = false;
     const cardData = apiTarotCards?.find((c) => c.name === card.name);
     const cardMeaning = cardData?.meaning_up ?? "";
@@ -85,7 +105,21 @@ export function CardReflectionScreen({
         if (cancelled) return;
         if (data.reflection && data.question) {
           setGroqResult(data);
-          updateHistoryEntry(new Date().toDateString(), {
+
+          // ── Save to localStorage ──
+          try {
+            const existing = localStorage.getItem("tarot_today");
+            if (existing) {
+              const parsed = JSON.parse(existing);
+              localStorage.setItem("tarot_today", JSON.stringify({
+                ...parsed,
+                reflection: data.reflection,
+                question: data.question,
+              }));
+            }
+          } catch {}
+
+          updateHistoryEntry(today, {
             reflection: data.reflection,
             question: data.question,
           });
