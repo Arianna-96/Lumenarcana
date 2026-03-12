@@ -27,11 +27,11 @@ Card meaning: "${cardMeaning}"
 Use both the horoscope energy and the card meaning together to craft the reflection and question. They should feel like two voices saying the same thing in different ways — not two separate ideas.
 
 Tone: warm, poetic, personal. Metaphors welcome but keep sentences short and clear.
-Do not start with the zodiac sign name as a direct address.
+Do not always start with the zodiac sign name as a direct address.
 Avoid overly elaborate compound metaphors — one image per sentence is enough.
 The reflection should include at least one concrete, actionable insight — not just imagery. Something the person can actually think about or do today.
 Avoid vague cosmic language — ground the message in real human experience.
-Length: 3-4 sentences for the reflection.
+Length: 3-5 sentences for the reflection.
 
 The journaling question must be specific and practical. It should help the person reflect on something concrete in their actual life — relationships, decisions, emotions, habits. Someone should be able to open their journal and start writing immediately after reading it. One sentence only.
 
