@@ -1,0 +1,124 @@
+/* ─────────────────────────────────────────────
+   mobile.css — Lumen Arcana responsive typography
+───────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+
+  /* ── CardReflectionScreen ── */
+
+  /* Card name */
+  .reflection-card-name {
+    font-size: 28px !important;
+  }
+
+  /* "Today's reflection" label */
+  .reflection-label-top {
+    font-size: 11px !important;
+    opacity: 0.8 !important;
+  }
+
+  /* "Leo · March 12" */
+  .reflection-label-date {
+    font-size: 12px !important;
+  }
+
+  /* Reflection text — il corsivo che non si legge */
+  .reflection-text {
+    font-size: 18px !important;
+    line-height: 2 !important;
+  }
+
+  /* "A question for you" label */
+  .reflection-question-label {
+    font-size: 12px !important;
+    letter-spacing: 0.18em !important;
+  }
+
+  /* Question text */
+  .reflection-question-text {
+    font-size: 16px !important;
+    line-height: 1.9 !important;
+  }
+
+  /* Footer lines */
+  .reflection-footer-primary {
+    font-size: 15px !important;
+  }
+
+  .reflection-footer-secondary {
+    font-size: 14px !important;
+  }
+
+  /* Return visit note */
+  .reflection-return-note {
+    font-size: 15px !important;
+  }
+
+  /* ── DeckScreen ── */
+
+  .deck-instruction {
+    font-size: 15px !important;
+    line-height: 1.9 !important;
+  }
+
+  /* ── HistoryOverlay — Readings tab ── */
+
+  .history-date-label {
+    font-size: 13px !important;
+  }
+
+  .history-card-name {
+    font-size: 22px !important;
+  }
+
+  .history-card-number {
+    font-size: 14px !important;
+  }
+
+  .history-reflection-text {
+    font-size: 17px !important;
+    line-height: 1.95 !important;
+  }
+
+  .history-question-label {
+    font-size: 13px !important;
+  }
+
+  .history-question-text {
+    font-size: 15px !important;
+    line-height: 1.9 !important;
+  }
+
+  /* ── HistoryOverlay — Collection tab ── */
+
+  .collection-counter {
+    font-size: 12px !important;
+  }
+
+  /* ── HistoryOverlay — Tabs ── */
+
+  .history-tab-btn {
+    font-size: 13px !important;
+    letter-spacing: 0.2em !important;
+  }
+
+  /* ── IntroScreen ── */
+
+  .intro-title {
+    font-size: 28px !important;
+  }
+
+  .intro-subtitle {
+    font-size: 16px !important;
+  }
+
+  /* ── TransitionDeckScreen ── */
+
+  .transition-title {
+    font-size: 28px !important;
+  }
+
+  .transition-subtitle {
+    font-size: 15px !important;
+  }
+}
