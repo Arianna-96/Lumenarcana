@@ -27,7 +27,6 @@
     font-size: 18px !important;
     line-height: 2 !important;
     font-weight: 800 !important;
-    font-style: normal !important;
   }
 
   /* "A question for you" label */
@@ -80,7 +79,7 @@
   .history-reflection-text {
     font-size: 18px !important;
     line-height: 1.95 !important;
-    font-style: normal !important;
+    font-weight: 800 !important;
   }
 
   .history-question-label {
