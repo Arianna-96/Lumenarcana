@@ -38,7 +38,10 @@ function Shimmer({ lines = 3 }: { lines?: number }) {
   );
 }
 
-// TODO: replace with Groq API
+function formatTodayShort(): string {
+  return new Date().toLocaleDateString("en-US", { month: "long", day: "numeric" });
+}
+
 export function CardReflectionScreen({
   card,
   sign,
@@ -54,13 +57,11 @@ export function CardReflectionScreen({
   const [expanded, setExpanded] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // ── Groq reflection state ────────────────────────────────────────────────
   const [groqLoading, setGroqLoading] = useState(true);
   const [groqResult, setGroqResult] = useState<{ reflection: string; question: string } | null>(null);
 
-  // Trigger Groq once parent APIs have resolved (apiTarotLoading flips to false)
   useEffect(() => {
-    if (apiTarotLoading) return; // still waiting for tarot / horoscope data
+    if (apiTarotLoading) return;
 
     let cancelled = false;
     const cardData = apiTarotCards?.find((c) => c.name === card.name);
@@ -84,20 +85,18 @@ export function CardReflectionScreen({
         if (cancelled) return;
         if (data.reflection && data.question) {
           setGroqResult(data);
-          // Patch history entry so the archive shows real AI copy
           updateHistoryEntry(new Date().toDateString(), {
             reflection: data.reflection,
             question: data.question,
           });
         }
       })
-      .catch(() => {/* silently fall back to placeholder */})
+      .catch(() => {})
       .finally(() => { if (!cancelled) setGroqLoading(false); });
 
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiTarotLoading]);
-  // ─────────────────────────────────────────────────────────────────────────
 
   const isLoadingReflection = apiTarotLoading || groqLoading;
 
@@ -117,7 +116,6 @@ export function CardReflectionScreen({
   const isSettled        = phase === "settled";
 
   const cardImage      = CARD_IMAGES[card.id] ?? null;
-  // Use Groq result when ready, otherwise fall back to placeholder
   const reflectionText = groqResult?.reflection ?? getPlaceholderReflection(card.name, sign);
   const questionText   = groqResult?.question   ?? getPlaceholderQuestion(card.name, sign);
 
@@ -324,6 +322,30 @@ export function CardReflectionScreen({
               {card.name}
             </h2>
             <div style={{ color: "#C9933A", fontSize: "13px", letterSpacing: "0.4em", opacity: 0.7 }}>✦ ✦ ✦</div>
+          </div>
+
+          {/* ── Daily reading label ── */}
+          <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
+            <span style={{
+              fontFamily: "'Raleway', sans-serif",
+              fontSize: "9px",
+              color: "#C9933A",
+              letterSpacing: "0.28em",
+              textTransform: "uppercase",
+              opacity: 0.68,
+            }}>
+              Today's reflection
+            </span>
+            <span style={{
+              fontFamily: "'Raleway', sans-serif",
+              fontSize: "10px",
+              color: "rgba(160,156,192,0.5)",
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              fontWeight: 300,
+            }}>
+              {sign} · {formatTodayShort()}
+            </span>
           </div>
 
           {/* Reflection */}
