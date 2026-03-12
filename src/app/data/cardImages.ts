@@ -17,6 +17,9 @@ import imgHermit        from "../../assets/tarot-hermit.jpg";
 import imgMagician      from "../../assets/tarot-magician.jpg";
 import imgEmpress       from "../../assets/tarot-empress.jpg";
 import imgMoon          from "../../assets/tarot-moon.jpg";
+import imgJustice       from "../../assets/tarot-justice.jpg";
+import imgLovers        from "../../assets/tarot-lover.jpg";
+import imgChariot       from "../../assets/tarot-chariot.jpg";
 
 /**
  * Maps a card id (matching MAJOR_ARCANA[n].id) to its illustration asset.
@@ -29,9 +32,12 @@ export const CARD_IMAGES: Record<number, string> = {
   3:  imgEmpress,        // The Empress        — III
   4:  imgEmperor,        // The Emperor        — IV
   5:  imgHierophant,     // The Hierophant     — V
+  6:  imgLovers,         // The Lovers         — VI
+  7:  imgChariot,        // The Chariot        - VII
   8:  imgStrength,       // Strength           — VIII
   9:  imgHermit,         // The Hermit         — IX
   10: imgWheelFortune,   // Wheel of Fortune   — X
+  11: imgJustice,        // The Justice        — XI
   12: imgHangedMan,      // The Hanged Man     — XII
   13: imgDeath,          // Death              — XIII
   14: imgTemperance,     // Temperance         — XIV
