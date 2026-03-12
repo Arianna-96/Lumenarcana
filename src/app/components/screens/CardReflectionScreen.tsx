@@ -227,10 +227,10 @@ export function CardReflectionScreen({
           </div>
 
           <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
-            <span className="reflection-label-top" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "9px", color: "#C9933A", letterSpacing: "0.28em", textTransform: "uppercase", opacity: 0.68 }}>
+            <span className="reflection-label-top" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "10px", color: "#C9933A", letterSpacing: "0.28em", textTransform: "uppercase", fontWeight: 500 }}>
               Today's reflection
             </span>
-            <span className="reflection-label-date" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "10px", color: "rgba(160,156,192,0.5)", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 300 }}>
+            <span className="reflection-label-date" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "10px", color: "rgba(160,156,192)", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 300 }}>
               {sign} · {formatTodayShort()}
             </span>
           </div>
