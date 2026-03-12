@@ -130,8 +130,8 @@ export function SplashScreen({
       {/* ── Subtitle ── */}
       <p
         style={{
-          fontFamily: "'Raleway', sans-serif",
-          fontSize: "18px",
+          fontFamily: "'Italiana', serif",
+          fontSize: "20px",
           color: "rgba(255, 255, 255, 0.65)",
           letterSpacing: "0.03em",
           opacity:
