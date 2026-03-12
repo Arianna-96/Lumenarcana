@@ -2,6 +2,11 @@
    mobile.css — Lumen Arcana responsive typography
 ───────────────────────────────────────────── */
 
+html, body {
+  background-color: #05040F;
+  overscroll-behavior: none;
+}
+
 @media (max-width: 480px) {
 
   /* ── CardReflectionScreen ── */
