@@ -132,7 +132,7 @@ export function SplashScreen({
         style={{
           fontFamily: "'Raleway', sans-serif",
           fontSize: "24px",
-          color: "rgba(255, 255, 255, 0.82)",
+          color: "rgba(255, 255, 255, 0.65)",
           letterSpacing: "0.03em",
           opacity:
             phase === "subtitle-in" || phase === "done" ? 1 : 0,
@@ -140,7 +140,7 @@ export function SplashScreen({
           margin: 0,
           fontWeight: 300,
           textAlign: "center",
-          lineHeight: 1,
+          lineHeight: 1.2,
           width: "0",
           minWidth: "100%",
         }}
