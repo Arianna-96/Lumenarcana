@@ -153,7 +153,7 @@ function ReadingsTab({ entries }: { entries: HistoryEntry[] }) {
             <span className="history-question-label" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "12px", color: "#C9933A", letterSpacing: "0.28em", textTransform: "uppercase", opacity: 0.68 }}>
               A question for you
             </span>
-            <p className="history-question-text" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "clamp(13px, 1.8vw, 16px)", color: "rgba(240,238,248,0.42)", lineHeight: 1.85, fontStyle: "italic", fontWeight: 300, letterSpacing: "0.02em", margin: 0 }}>
+            <p className="history-question-text" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "clamp(13px, 1.8vw, 16px)", color: "rgba(240,238,248,0.75)", lineHeight: 1.85, fontStyle: "italic", fontWeight: 300, letterSpacing: "0.02em", margin: 0 }}>
               {entry.question}
             </p>
           </div>
