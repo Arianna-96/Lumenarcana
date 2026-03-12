@@ -246,7 +246,7 @@ export function CardReflectionScreen({
           <div style={{ width: "100%", height: "1px", background: "linear-gradient(90deg, transparent, rgba(201,147,58,0.3), transparent)" }} />
 
           <div className="w-full text-center">
-            <span className="reflection-question-label" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "10px", color: "#A09CC0", letterSpacing: "0.22em", textTransform: "uppercase", display: "block", marginBottom: "10px", fontWeight: 500 }}>
+            <span className="reflection-question-label" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "10px", color: "#C9933A", letterSpacing: "0.22em", textTransform: "uppercase", display: "block", marginBottom: "10px", fontWeight: 500 }}>
               A question for you
             </span>
             {isLoadingReflection ? <Shimmer lines={2} /> : (
