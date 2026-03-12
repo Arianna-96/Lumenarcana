@@ -66,12 +66,13 @@ function computeInitialState(): InitialAppState {
     }
   }
 
+  // Onboarded but no card today → show splash + welcome back flow
   return {
-    screen: "deck",
+    screen: "splash",
     sign,
     card: null,
     isReturnVisit: false,
-    showZodiacIcon: true,
+    showZodiacIcon: false,
   };
 }
 
@@ -82,6 +83,7 @@ export default function App() {
   const [zodiacSign, setZodiacSign] = useState<string | null>(appState.sign);
   const [drawnCard, setDrawnCard] = useState<TarotCard | null>(appState.card);
   const isReturnVisit = useRef(appState.isReturnVisit);
+  const isReturningUser = useRef(appState.sign !== null && !appState.isReturnVisit);
   const [showZodiacIcon, setShowZodiacIcon] = useState(appState.showZodiacIcon);
   const [isChangingSign, setIsChangingSign] = useState(false);
   const changeSignReturnScreen = useRef<Screen>("deck");
@@ -144,7 +146,14 @@ export default function App() {
   }, []);
 
   const handleSplashComplete = useCallback(() => navigateTo("intro"), [navigateTo]);
-  const handleIntroComplete = useCallback(() => navigateTo("birthdate"), [navigateTo]);
+
+  const handleIntroComplete = useCallback(() => {
+    if (isReturningUser.current) {
+      navigateTo("deck");
+    } else {
+      navigateTo("birthdate");
+    }
+  }, [navigateTo]);
 
   const handleBirthDateComplete = useCallback(
     (sign: string, _day: number, _month: number) => {
@@ -247,7 +256,13 @@ export default function App() {
       case "splash":
         return <SplashScreen onComplete={handleSplashComplete} />;
       case "intro":
-        return <IntroScreen onComplete={handleIntroComplete} />;
+        return (
+          <IntroScreen
+            onComplete={handleIntroComplete}
+            isReturning={isReturningUser.current}
+            sign={zodiacSign}
+          />
+        );
       case "birthdate":
         return <BirthDateScreen onComplete={handleBirthDateComplete} />;
       case "zodiac-reveal":
