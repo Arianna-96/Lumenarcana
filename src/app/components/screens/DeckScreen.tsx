@@ -254,7 +254,7 @@ export function DeckScreen({ onCardPicked, availableCards }: DeckScreenProps) {
         }}>
           <p style={{
             fontFamily: "'Raleway', sans-serif",
-            fontSize: "clamp(13px, 1.6vw, 15px)",
+            fontSize: "clamp(13px, 1.6vw, 16px)",
             color: "rgba(225,225,225,0.65)",
             fontWeight: 400,
             textAlign: "center",
@@ -262,15 +262,15 @@ export function DeckScreen({ onCardPicked, availableCards }: DeckScreenProps) {
             letterSpacing: "0.04em",
             margin: 0,
           }}>
-            Hover to shuffle.
+            Hover on the deck to shuffle.
           </p>
           <p style={{
             fontFamily: "'Raleway', sans-serif",
-            fontSize: "clamp(13px, 1.6vw, 15px)",
+            fontSize: "clamp(13px, 1.6vw, 16px)",
             color: "rgba(225,225,225,0.65)",
             fontWeight: 400,
             textAlign: "center",
-            lineHeight: 1.75,
+            lineHeight: 1,
             letterSpacing: "0.04em",
             margin: 0,
           }}>
