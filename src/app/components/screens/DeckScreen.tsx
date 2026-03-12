@@ -100,7 +100,6 @@ export function DeckScreen({ onCardPicked, availableCards }: DeckScreenProps) {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [isHovered, isClicked]);
 
-  // ── Mouse handlers (desktop + touch PC) ──
   const handleHover = useCallback(() => {
     if (!isClicked) setIsHovered(true);
   }, [isClicked]);
@@ -111,7 +110,6 @@ export function DeckScreen({ onCardPicked, availableCards }: DeckScreenProps) {
     setPhaseIdx(0);
   }, [isClicked]);
 
-  // ── Touch handlers (mobile long press) ──
   const handleTouchStart = useCallback(() => {
     if (isClicked) return;
     touchTimerRef.current = setTimeout(() => {
@@ -172,7 +170,6 @@ export function DeckScreen({ onCardPicked, availableCards }: DeckScreenProps) {
         style={{ animation: "fade-in-up 1200ms ease-in-out forwards", paddingTop: "80px" }}
       >
         <div style={{ position: "relative" }}>
-
           <div style={{
             position: "absolute",
             bottom: -20,
@@ -210,10 +207,8 @@ export function DeckScreen({ onCardPicked, availableCards }: DeckScreenProps) {
                   key={i}
                   style={{
                     position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: cardW,
-                    height: cardH,
+                    top: 0, left: 0,
+                    width: cardW, height: cardH,
                     borderRadius: 18,
                     overflow: "visible",
                     zIndex: t.zIndex,
@@ -222,14 +217,11 @@ export function DeckScreen({ onCardPicked, availableCards }: DeckScreenProps) {
                       ? "transform 900ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 600ms ease-in-out"
                       : "transform 950ms cubic-bezier(0.16, 1, 0.3, 1)",
                     boxShadow: isSelected ? SHADOW_PICK : SHADOW_SOFT,
-                    opacity: 1,
                   }}
                 >
                   <div style={{
-                    width: "100%",
-                    height: "100%",
-                    borderRadius: 18,
-                    overflow: "hidden",
+                    width: "100%", height: "100%",
+                    borderRadius: 18, overflow: "hidden",
                     // @ts-ignore
                     "--amp-y": `${fp.ampY}px`,
                     "--amp-r": `${fp.ampR}deg`,
@@ -238,36 +230,15 @@ export function DeckScreen({ onCardPicked, availableCards }: DeckScreenProps) {
                       : "none",
                   }}>
                     <img
-                      src={imgCardBack}
-                      alt=""
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        display: "block",
-                        userSelect: "none",
-                        pointerEvents: "none",
-                      }}
+                      src={imgCardBack} alt=""
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", userSelect: "none", pointerEvents: "none" }}
                       draggable={false}
                     />
                     {i > 0 && (
-                      <div style={{
-                        position: "absolute",
-                        inset: 0,
-                        borderRadius: 18,
-                        background: `rgba(5,4,15,${i * 0.03})`,
-                        pointerEvents: "none",
-                      }} />
+                      <div style={{ position: "absolute", inset: 0, borderRadius: 18, background: `rgba(5,4,15,${i * 0.03})`, pointerEvents: "none" }} />
                     )}
                     {isClicked && !isSelected && (
-                      <div style={{
-                        position: "absolute",
-                        inset: 0,
-                        borderRadius: 18,
-                        background: "rgba(5,4,15,0.55)",
-                        pointerEvents: "none",
-                        transition: "opacity 500ms ease-in-out",
-                      }} />
+                      <div style={{ position: "absolute", inset: 0, borderRadius: 18, background: "rgba(5,4,15,0.55)", pointerEvents: "none", transition: "opacity 500ms ease-in-out" }} />
                     )}
                   </div>
                 </div>
@@ -276,73 +247,21 @@ export function DeckScreen({ onCardPicked, availableCards }: DeckScreenProps) {
           </div>
         </div>
 
-        {/* Instructions */}
         <div style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "6px",
+          display: "flex", flexDirection: "column", alignItems: "center", gap: "6px",
           opacity: isClicked ? 0 : 1,
           transition: "opacity 1200ms ease-in-out",
         }}>
-          <p
-            className="instruction-desktop"
-            style={{
-              fontFamily: "'Raleway', sans-serif",
-              fontSize: "clamp(13px, 1.6vw, 16px)",
-              color: "rgba(225,225,225,0.65)",
-              fontWeight: 400,
-              textAlign: "center",
-              lineHeight: 1.75,
-              letterSpacing: "0.04em",
-              margin: 0,
-            }}
-          >
+          <p className="instruction-desktop deck-instruction" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "clamp(13px, 1.6vw, 16px)", color: "rgba(225,225,225,0.65)", fontWeight: 400, textAlign: "center", lineHeight: 1.75, letterSpacing: "0.04em", margin: 0 }}>
             Hover on the deck to shuffle.
           </p>
-          <p
-            className="instruction-mobile"
-            style={{
-              fontFamily: "'Raleway', sans-serif",
-              fontSize: "clamp(13px, 1.6vw, 16px)",
-              color: "rgba(225,225,225,0.65)",
-              fontWeight: 400,
-              textAlign: "center",
-              lineHeight: 1.75,
-              letterSpacing: "0.04em",
-              margin: 0,
-            }}
-          >
+          <p className="instruction-mobile deck-instruction" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "clamp(13px, 1.6vw, 16px)", color: "rgba(225,225,225,0.65)", fontWeight: 400, textAlign: "center", lineHeight: 1.75, letterSpacing: "0.04em", margin: 0 }}>
             Hold to shuffle.
           </p>
-          <p
-            className="instruction-desktop"
-            style={{
-              fontFamily: "'Raleway', sans-serif",
-              fontSize: "clamp(13px, 1.6vw, 16px)",
-              color: "rgba(225,225,225,0.65)",
-              fontWeight: 400,
-              textAlign: "center",
-              lineHeight: 1,
-              letterSpacing: "0.04em",
-              margin: 0,
-            }}
-          >
+          <p className="instruction-desktop deck-instruction" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "clamp(13px, 1.6vw, 16px)", color: "rgba(225,225,225,0.65)", fontWeight: 400, textAlign: "center", lineHeight: 1, letterSpacing: "0.04em", margin: 0 }}>
             Click when you're ready to draw.
           </p>
-          <p
-            className="instruction-mobile"
-            style={{
-              fontFamily: "'Raleway', sans-serif",
-              fontSize: "clamp(13px, 1.6vw, 16px)",
-              color: "rgba(225,225,225,0.65)",
-              fontWeight: 400,
-              textAlign: "center",
-              lineHeight: 1,
-              letterSpacing: "0.04em",
-              margin: 0,
-            }}
-          >
+          <p className="instruction-mobile deck-instruction" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "clamp(13px, 1.6vw, 16px)", color: "rgba(225,225,225,0.65)", fontWeight: 400, textAlign: "center", lineHeight: 1, letterSpacing: "0.04em", margin: 0 }}>
             Tap when you're ready to draw.
           </p>
         </div>
