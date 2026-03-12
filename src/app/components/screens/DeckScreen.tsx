@@ -85,7 +85,8 @@ export function DeckScreen({ onCardPicked, availableCards }: DeckScreenProps) {
   const [phaseIdx, setPhaseIdx]           = useState(0);
   const [isClicked, setIsClicked]         = useState(false);
   const [selectedLayer, setSelectedLayer] = useState<number | null>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const intervalRef   = useRef<ReturnType<typeof setInterval> | null>(null);
+  const touchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (isHovered && !isClicked) {
@@ -99,18 +100,40 @@ export function DeckScreen({ onCardPicked, availableCards }: DeckScreenProps) {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [isHovered, isClicked]);
 
-  const handleHover = useCallback(() => { if (!isClicked) setIsHovered(true); }, [isClicked]);
+  // ── Mouse handlers (desktop + touch PC) ──
+  const handleHover = useCallback(() => {
+    if (!isClicked) setIsHovered(true);
+  }, [isClicked]);
+
   const handleLeave = useCallback(() => {
     if (isClicked) return;
     setIsHovered(false);
     setPhaseIdx(0);
   }, [isClicked]);
 
+  // ── Touch handlers (mobile long press) ──
+  const handleTouchStart = useCallback(() => {
+    if (isClicked) return;
+    touchTimerRef.current = setTimeout(() => {
+      setIsHovered(true);
+    }, 400);
+  }, [isClicked]);
+
+  const handleTouchEnd = useCallback(() => {
+    if (touchTimerRef.current) clearTimeout(touchTimerRef.current);
+    if (isClicked) return;
+    if (isHovered) {
+      setIsHovered(false);
+      setPhaseIdx(0);
+    }
+  }, [isClicked, isHovered]);
+
   const handleClick = useCallback(() => {
     if (isClicked) return;
     setIsClicked(true);
     setIsHovered(false);
     if (intervalRef.current) clearInterval(intervalRef.current);
+    if (touchTimerRef.current) clearTimeout(touchTimerRef.current);
     const sl   = Math.floor(Math.random() * L);
     const card = availableCards[Math.floor(Math.random() * availableCards.length)] ?? availableCards[0];
     setSelectedLayer(sl);
@@ -135,6 +158,12 @@ export function DeckScreen({ onCardPicked, availableCards }: DeckScreenProps) {
         @keyframes card-float-y {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
           50%       { transform: translateY(var(--amp-y)) rotate(var(--amp-r)); }
+        }
+        .instruction-desktop { display: block; }
+        .instruction-mobile  { display: none;  }
+        @media (hover: none) {
+          .instruction-desktop { display: none;  }
+          .instruction-mobile  { display: block; }
         }
       `}</style>
 
@@ -165,6 +194,9 @@ export function DeckScreen({ onCardPicked, availableCards }: DeckScreenProps) {
             onMouseEnter={handleHover}
             onMouseLeave={handleLeave}
             onClick={handleClick}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            onTouchCancel={handleTouchEnd}
           >
             {Array.from({ length: L }, (_, ri) => {
               const i          = L - 1 - ri;
@@ -244,6 +276,7 @@ export function DeckScreen({ onCardPicked, availableCards }: DeckScreenProps) {
           </div>
         </div>
 
+        {/* Instructions */}
         <div style={{
           display: "flex",
           flexDirection: "column",
@@ -252,29 +285,65 @@ export function DeckScreen({ onCardPicked, availableCards }: DeckScreenProps) {
           opacity: isClicked ? 0 : 1,
           transition: "opacity 1200ms ease-in-out",
         }}>
-          <p style={{
-            fontFamily: "'Raleway', sans-serif",
-            fontSize: "clamp(13px, 1.6vw, 16px)",
-            color: "rgba(225,225,225,0.65)",
-            fontWeight: 400,
-            textAlign: "center",
-            lineHeight: 1.75,
-            letterSpacing: "0.04em",
-            margin: 0,
-          }}>
+          <p
+            className="instruction-desktop"
+            style={{
+              fontFamily: "'Raleway', sans-serif",
+              fontSize: "clamp(13px, 1.6vw, 16px)",
+              color: "rgba(225,225,225,0.65)",
+              fontWeight: 400,
+              textAlign: "center",
+              lineHeight: 1.75,
+              letterSpacing: "0.04em",
+              margin: 0,
+            }}
+          >
             Hover on the deck to shuffle.
           </p>
-          <p style={{
-            fontFamily: "'Raleway', sans-serif",
-            fontSize: "clamp(13px, 1.6vw, 16px)",
-            color: "rgba(225,225,225,0.65)",
-            fontWeight: 400,
-            textAlign: "center",
-            lineHeight: 1,
-            letterSpacing: "0.04em",
-            margin: 0,
-          }}>
+          <p
+            className="instruction-mobile"
+            style={{
+              fontFamily: "'Raleway', sans-serif",
+              fontSize: "clamp(13px, 1.6vw, 16px)",
+              color: "rgba(225,225,225,0.65)",
+              fontWeight: 400,
+              textAlign: "center",
+              lineHeight: 1.75,
+              letterSpacing: "0.04em",
+              margin: 0,
+            }}
+          >
+            Hold to shuffle.
+          </p>
+          <p
+            className="instruction-desktop"
+            style={{
+              fontFamily: "'Raleway', sans-serif",
+              fontSize: "clamp(13px, 1.6vw, 16px)",
+              color: "rgba(225,225,225,0.65)",
+              fontWeight: 400,
+              textAlign: "center",
+              lineHeight: 1,
+              letterSpacing: "0.04em",
+              margin: 0,
+            }}
+          >
             Click when you're ready to draw.
+          </p>
+          <p
+            className="instruction-mobile"
+            style={{
+              fontFamily: "'Raleway', sans-serif",
+              fontSize: "clamp(13px, 1.6vw, 16px)",
+              color: "rgba(225,225,225,0.65)",
+              fontWeight: 400,
+              textAlign: "center",
+              lineHeight: 1,
+              letterSpacing: "0.04em",
+              margin: 0,
+            }}
+          >
+            Tap when you're ready to draw.
           </p>
         </div>
       </div>
