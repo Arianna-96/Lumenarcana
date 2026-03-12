@@ -16,19 +16,21 @@ export function TransitionDeckScreen({ onComplete }: TransitionDeckScreenProps) 
       style={{ animation: "fade-in-up 1200ms ease-in-out forwards" }}
     >
       <p
+        className="transition-title"
         style={{
           fontFamily: "'Italiana', serif",
           fontSize: "clamp(24px, 4.5vw, 40px)",
           color: "#F0EEF8",
           fontWeight: 400,
           letterSpacing: "0.03em",
-          lineHeight:"0.8",
+          lineHeight: "0.8",
           margin: 0,
         }}
       >
         Your arcana is ready.
       </p>
       <p
+        className="transition-subtitle"
         style={{
           fontFamily: "'Raleway', sans-serif",
           fontSize: "clamp(13px, 2vw, 18px)",
@@ -40,7 +42,6 @@ export function TransitionDeckScreen({ onComplete }: TransitionDeckScreenProps) 
       >
         Take a breath. The cards will wait.
       </p>
-
       <div
         style={{
           marginTop: "12px",
@@ -53,7 +54,6 @@ export function TransitionDeckScreen({ onComplete }: TransitionDeckScreenProps) 
         }}
       >
         ✦ ✦ ✦
-        
       </div>
     </div>
   );
