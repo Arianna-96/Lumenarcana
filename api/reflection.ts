@@ -27,8 +27,11 @@ function buildUserPrompt(
   sign: string,
   horoscope: string,
   cardName: string,
-  cardMeaning: string
+  cardMeaning: string,
+  seed: string
 ): string {
+  const style = OPENING_STYLES[Math.floor(Math.random() * OPENING_STYLES.length)];
+
   return `The user is a ${sign}. Today's horoscope: "${horoscope}"
 
 They drew: ${cardName}
