@@ -215,4 +215,58 @@ export function CardReflectionScreen({
           style={{ maxWidth: "640px", gap: "clamp(28px, 4vh, 44px)", opacity: isContentVisible ? 1 : 0, transform: isContentVisible ? "translateY(0)" : "translateY(32px)", pointerEvents: isContentVisible ? "auto" : "none", transition: isContentVisible ? "opacity 900ms 350ms ease-out, transform 900ms 350ms ease-out" : "none" }}
         >
           {isReturnVisit && (
-            <p className="reflection-return-note" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "13px", color: "#A09CC0", letterSpacing: "0.1em", textAlign: "center", fontStyle: "italic"
+            <p className="reflection-return-note" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "13px", color: "#A09CC0", letterSpacing: "0.1em", textAlign: "center", fontStyle: "italic" }}>
+              This is your card for today.
+            </p>
+          )}
+
+          <div className="flex flex-col items-center gap-3">
+            <h2 className="reflection-card-name" style={{ fontFamily: "'Italiana', serif", fontSize: "clamp(22px, 4vw, 38px)", color: "#E8B96A", fontWeight: 400, letterSpacing: "0.06em", margin: 0, textAlign: "center" }}>
+              {card.name}
+            </h2>
+            <div style={{ color: "#C9933A", fontSize: "13px", letterSpacing: "0.4em", opacity: 0.7 }}>✦ ✦ ✦</div>
+          </div>
+
+          <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
+            <span className="reflection-label-top" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "10px", color: "#C9933A", letterSpacing: "0.28em", textTransform: "uppercase", fontWeight: 500 }}>
+              Today's reflection
+            </span>
+            <span className="reflection-label-date" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "10px", color: "rgba(160,156,192,0.5)", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 300 }}>
+              {sign} · {formatTodayShort()}
+            </span>
+          </div>
+
+          <div className="w-full text-center">
+            {isLoadingReflection ? <Shimmer lines={4} /> : (
+              <p className="reflection-text" style={{ fontFamily: "'Italiana', serif", fontSize: "clamp(16px, 2.5vw, 21px)", color: "#F0EEF8", lineHeight: 1.9, fontStyle: "italic", fontWeight: 400, margin: 0 }}>
+                {reflectionText}
+              </p>
+            )}
+          </div>
+
+          <div style={{ width: "100%", height: "1px", background: "linear-gradient(90deg, transparent, rgba(201,147,58,0.3), transparent)" }} />
+
+          <div className="w-full text-center">
+            <span className="reflection-question-label" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "10px", color: "#C9933A", letterSpacing: "0.22em", textTransform: "uppercase", display: "block", marginBottom: "10px", fontWeight: 500 }}>
+              A question for you
+            </span>
+            {isLoadingReflection ? <Shimmer lines={2} /> : (
+              <p className="reflection-question-text" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "clamp(14px, 2vw, 17px)", color: "rgba(240,238,248,0.75)", lineHeight: 1.85, fontStyle: "italic", fontWeight: 300, letterSpacing: "0.02em", margin: 0 }}>
+                {questionText}
+              </p>
+            )}
+          </div>
+
+          <div className="flex flex-col items-center gap-2">
+            <p className="reflection-footer-primary" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "14px", color: "#A09CC0", letterSpacing: "0.1em", textAlign: "center", fontWeight: 300, margin: 0 }}>
+              Carry this with you today.
+            </p>
+            <p className="reflection-footer-secondary" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "14px", color: "rgba(160,156,192,0.80)", letterSpacing: "0.08em", textAlign: "center", fontWeight: 300, margin: 0 }}>
+              {isReturnVisit ? "Come back tomorrow for a new reading 🌙" : "We'll be here again tomorrow. 🌙"}
+            </p>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
