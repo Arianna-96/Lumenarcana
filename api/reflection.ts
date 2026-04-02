@@ -1,28 +1,34 @@
-/**
- * Vercel Edge Function — /api/reflection
- *
- * Receives: POST { sign, horoscope, cardName, cardMeaning }
- * Returns:  { reflection: string, question: string }
- *
- * The GROQ_API_KEY must be set as an environment variable in Vercel project settings.
- * Never expose this key in frontend code.
- */
-
 export const config = { runtime: "edge" };
 
 const SYSTEM_PROMPT =
   "You are a warm, poetic tarot guide. You write personal, evocative reflections using metaphor and imagery — but always in clear, simple sentences. No complex or convoluted phrasing. Every sentence should be easy to read on first try. Always respond ONLY with a valid JSON object, no markdown, no backticks, no preamble.";
 
+const OPENING_STYLES = [
+  "Start with an observation about the external world that mirrors the inner one.",
+  "Start with a sensory image — something the person might see, hear, or feel today.",
+  "Start with a quiet question disguised as a statement.",
+  "Start with what the card is releasing, not what it's calling in.",
+  "Start with the tension between two opposing energies in the reading.",
+  "Start with something small and concrete — an object, a gesture, a moment.",
+  "Start with what the horoscope and card are both quietly pointing toward.",
+];
+
 function buildUserPrompt(
   sign: string,
   horoscope: string,
   cardName: string,
-  cardMeaning: string
+  cardMeaning: string,
+  seed: string
 ): string {
+  const style = OPENING_STYLES[Math.floor(Math.random() * OPENING_STYLES.length)];
+
   return `The user is a ${sign}. Today's horoscope: "${horoscope}"
 
 They drew: ${cardName}
 Card meaning: "${cardMeaning}"
+
+Variation seed (use this to ensure a fresh, unique response): ${seed}
+Opening instruction: ${style}
 
 Use both the horoscope energy and the card meaning together to craft the reflection and question. They should feel like two voices saying the same thing in different ways — not two separate ideas.
 
@@ -69,6 +75,7 @@ export default async function handler(req: Request): Promise<Response> {
   }
 
   const { sign, horoscope, cardName, cardMeaning } = body;
+  const seed = Math.random().toString(36).substring(2, 10);
 
   try {
     const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -81,9 +88,9 @@ export default async function handler(req: Request): Promise<Response> {
         model: "llama-3.3-70b-versatile",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
-          { role: "user",   content: buildUserPrompt(sign, horoscope, cardName, cardMeaning) },
+          { role: "user",   content: buildUserPrompt(sign, horoscope, cardName, cardMeaning, seed) },
         ],
-        temperature: 0.85,
+        temperature: 1.0,
         max_tokens: 400,
       }),
     });
@@ -102,8 +109,6 @@ export default async function handler(req: Request): Promise<Response> {
     };
 
     const rawContent = groqData.choices?.[0]?.message?.content ?? "{}";
-
-    // Strip any accidental markdown fences before parsing
     const cleaned = rawContent.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
     const parsed = JSON.parse(cleaned) as { reflection: string; question: string };
 
