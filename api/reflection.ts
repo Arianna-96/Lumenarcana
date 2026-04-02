@@ -1,3 +1,13 @@
+/**
+ * Vercel Edge Function — /api/reflection
+ *
+ * Receives: POST { sign, horoscope, cardName, cardMeaning }
+ * Returns:  { reflection: string, question: string }
+ *
+ * The GROQ_API_KEY must be set as an environment variable in Vercel project settings.
+ * Never expose this key in frontend code.
+ */
+
 export const config = { runtime: "edge" };
 
 const SYSTEM_PROMPT =
@@ -13,6 +23,7 @@ const OPENING_STYLES = [
   "Start with what the horoscope and card are both quietly pointing toward.",
 ];
 
+
 function buildUserPrompt(
   sign: string,
   horoscope: string,
@@ -20,17 +31,16 @@ function buildUserPrompt(
   cardMeaning: string,
   seed: string
 ): string {
-  const style = OPENING_STYLES[Math.floor(Math.random() * OPENING_STYLES.length)];
+  return `The user is a ${sign}.
 
-  return `The user is a ${sign}. Today's horoscope: "${horoscope}"
+Today's horoscope: "${horoscope}"
 
-They drew: ${cardName}
-Card meaning: "${cardMeaning}"
+They drew: ${cardName}. Card meaning: "${cardMeaning}"
 
-Variation seed (use this to ensure a fresh, unique response): ${seed}
+The horoscope is the PRIMARY element — it changes every day and must be the beating heart of the reflection. The card is the lens through which to read it, not the other way around. If the horoscope energy is restless, the reflection must feel restless. If it is expansive, the reflection opens up. Mirror the horoscope specific energy first, then filter it through the card meaning.
+
+Variation seed: ${seed}
 Opening instruction: ${style}
-
-Use both the horoscope energy and the card meaning together to craft the reflection and question. They should feel like two voices saying the same thing in different ways — not two separate ideas.
 
 Tone: warm, poetic, personal. Metaphors welcome but keep sentences short and clear.
 Do not always start with the zodiac sign name as a direct address.
@@ -39,13 +49,10 @@ The reflection should include at least one concrete, actionable insight — not 
 Avoid vague cosmic language — ground the message in real human experience.
 Length: 3-5 sentences for the reflection.
 
-The journaling question must be specific and practical. It should help the person reflect on something concrete in their actual life — relationships, decisions, emotions, habits. Someone should be able to open their journal and start writing immediately after reading it. One sentence only.
+The journaling question must be specific and practical. It should help the person reflect on something concrete in their actual life — relationships, decisions, emotions, habits. Someone should be able to open their journal and start writing immediately after reading it. One or two sentences only.
 
-Write ONLY this JSON:
-{
-  "reflection": "...",
-  "question": "..."
-}`;
+Write ONLY this JSON object with no markdown, no backticks, no extra text before or after:
+{"reflection": "...", "question": "..."}`;
 }
 
 export default async function handler(req: Request): Promise<Response> {
@@ -78,63 +85,3 @@ export default async function handler(req: Request): Promise<Response> {
   const seed = Math.random().toString(36).substring(2, 10);
 
   try {
-    const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user",   content: buildUserPrompt(sign, horoscope, cardName, cardMeaning, seed) },
-        ],
-        temperature: 1.0,
-        max_tokens: 400,
-      }),
-    });
-
-    if (!groqRes.ok) {
-      const text = await groqRes.text();
-      console.error("[/api/reflection] Groq error:", groqRes.status, text);
-      return new Response(JSON.stringify({ error: "Groq API error" }), {
-        status: 502,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    const groqData = await groqRes.json() as {
-      choices: Array<{ message: { content: string } }>;
-    };
-
-    const rawContent = groqData.choices?.[0]?.message?.content ?? "{}";
-
-    // rimuovi markdown fences
-    const cleaned = rawContent
-      .replace(/^```(?:json)?\s*/i, "")
-      .replace(/\s*```$/i, "")
-      .trim();
-
-    // sanitizza caratteri di controllo illegali
-    const sanitized = cleaned.replace(/[\u0000-\u001F\u007F]/g, (char) => {
-      if (char === "\n") return "\\n";
-      if (char === "\r") return "\\r";
-      if (char === "\t") return "\\t";
-      return "";
-    });
-
-    const parsed = JSON.parse(sanitized) as { reflection: string; question: string };
-
-    return new Response(JSON.stringify(parsed), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (err) {
-    console.error("[/api/reflection] Unexpected error:", err);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-}
