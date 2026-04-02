@@ -94,7 +94,7 @@ export default function App() {
   const [apiTarotCards, setApiTarotCards] = useState<ApiTarotCard[] | null>(null);
   const [horoscopeText, setHoroscopeText] = useState<string | null>(null);
   const [tarotLoading, setTarotLoading] = useState(true);
-  const [horoscopeLoading, setHoroscopeLoading] = useState(false);
+  const [horoscopeLoading, setHoroscopeLoading] = useState(appState.sign !== null);
   const apiTarotLoading = tarotLoading || horoscopeLoading;
 
   // Fetch Major Arcana card data once on mount
