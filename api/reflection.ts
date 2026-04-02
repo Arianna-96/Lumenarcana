@@ -109,8 +109,22 @@ export default async function handler(req: Request): Promise<Response> {
     };
 
     const rawContent = groqData.choices?.[0]?.message?.content ?? "{}";
-    const cleaned = rawContent.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
-    const parsed = JSON.parse(cleaned) as { reflection: string; question: string };
+
+    // rimuovi markdown fences
+    const cleaned = rawContent
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
+
+    // sanitizza caratteri di controllo illegali
+    const sanitized = cleaned.replace(/[\u0000-\u001F\u007F]/g, (char) => {
+      if (char === "\n") return "\\n";
+      if (char === "\r") return "\\r";
+      if (char === "\t") return "\\t";
+      return "";
+    });
+
+    const parsed = JSON.parse(sanitized) as { reflection: string; question: string };
 
     return new Response(JSON.stringify(parsed), {
       status: 200,
