@@ -38,8 +38,6 @@ They drew: ${cardName}
 Card meaning: "${cardMeaning}"
 Opening instruction: ${style}
 
-Use both the horoscope energy and the card meaning together to craft the reflection and question. They should feel like two voices saying the same thing in different ways, not two separate ideas.
-
 IMPORTANT: The horoscope is the most important element. It changes every day and must drive the reflection. The card meaning is the lens, the horoscope is the subject. If you ignore the horoscope the reflection is wrong.
 
 Tone: warm, poetic, personal. Metaphors welcome but keep sentences short and clear.
@@ -50,6 +48,7 @@ Avoid vague cosmic language — ground the message in real human experience.
 Length: 3-5 sentences for the reflection.
 
 The journaling question must be specific and practical. It should help the person reflect on something concrete in their actual life — relationships, decisions, emotions, habits. Someone should be able to open their journal and start writing immediately after reading it. One or two sentences only. It shopuld be based on the reflection.
+The question must NOT always start with "What". Vary the opening — sometimes start with "Where", "When", "Who", "How", "Which", "Think about", "If you", "Imagine", or make it a direct statement that implies a question. Never use the same sentence structure twice in 3 days.
 
 Write ONLY this JSON:
 {
