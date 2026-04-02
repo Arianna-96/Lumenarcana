@@ -27,8 +27,7 @@ function buildUserPrompt(
   sign: string,
   horoscope: string,
   cardName: string,
-  cardMeaning: string,
-  seed: string
+  cardMeaning: string
 ): string {
   const style = OPENING_STYLES[Math.floor(Math.random() * OPENING_STYLES.length)];
 
