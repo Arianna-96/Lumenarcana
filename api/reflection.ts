@@ -112,19 +112,7 @@ export default async function handler(req: Request): Promise<Response> {
       .replace(/\s*```$/i, "")
       .trim();
 
-    // sanitizza caratteri di controllo illegali
-    const sanitized = cleaned.replace(/[\u0000-\u001F\u007F]/g, (char) => {
-      if (char === "\n") return "\\n";
-      if (char === "\r") return "\\r";
-      if (char === "\t") return "\\t";
-      return "";
-    });
-
-    const parsed = JSON.parse(sanitized) as { reflection: string; question: string };
-
-    if (!parsed.reflection || !parsed.question) {
-      throw new Error("Missing reflection or question in Groq response");
-    }
+    const parsed = JSON.parse(cleaned) as { reflection: string; question: string };
 
     return new Response(JSON.stringify(parsed), {
       status: 200,
