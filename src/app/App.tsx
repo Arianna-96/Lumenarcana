@@ -125,7 +125,7 @@ export default function App() {
       .then((res) => res.json())
       .then((data) => {
         const d = data as { data?: { horoscope_data?: string } };
-        setHoroscopeText(d?.data?.horoscope_data ?? "");
+        setHoroscopeText(d?.data?.horoscope ?? "");
       })
       .catch(() => setHoroscopeText(""))
       .finally(() => { clearTimeout(timeout); setHoroscopeLoading(false); });
