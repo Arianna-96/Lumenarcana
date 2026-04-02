@@ -12,8 +12,25 @@ interface CardReflectionScreenProps {
   sign: string;
   isReturnVisit?: boolean;
   apiTarotCards?: ApiTarotCard[] | null;
-  horoscopeText?: string | null;
+  horoscopeText?: any; // Accetta l'oggetto dall'api horoscope
   apiTarotLoading?: boolean;
+}
+
+// Funzione helper per estrarre solo il testo dell'oroscopo
+function extractHoroscopeText(data: any): string {
+  if (!data) return "";
+  // Se è l'oggetto che hai postato: { data: { horoscope: "..." } }
+  if (data.data?.horoscope) return data.data.horoscope;
+  // Se è già una stringa
+  if (typeof data === "string") {
+    try {
+      const parsed = JSON.parse(data);
+      return parsed.data?.horoscope || parsed.horoscope || data;
+    } catch {
+      return data;
+    }
+  }
+  return "";
 }
 
 function Shimmer({ lines = 3 }: { lines?: number }) {
@@ -55,13 +72,16 @@ export function CardReflectionScreen({
   const [groqResult, setGroqResult]   = useState<{ reflection: string; question: string } | null>(null);
 
   useEffect(() => {
+    // Se i dati base dei tarocchi stanno caricando, aspettiamo
     if (apiTarotLoading) return;
 
     const today = new Date().toDateString();
+    
+    // 1. Controllo cache locale per non chiamare Groq inutilmente
     try {
       const cached = localStorage.getItem("tarot_today");
       if (cached) {
-        const parsed = JSON.parse(cached) as { date: string; cardId: number; reflection?: string; question?: string };
+        const parsed = JSON.parse(cached);
         if (parsed.date === today && parsed.reflection && parsed.question) {
           setGroqResult({ reflection: parsed.reflection, question: parsed.question });
           setGroqLoading(false);
@@ -73,36 +93,47 @@ export function CardReflectionScreen({
     let cancelled = false;
     const cardData    = apiTarotCards?.find((c) => c.name === card.name);
     const cardMeaning = cardData?.meaning_up ?? "";
+    
+    // ESTRAZIONE TESTO PULITO
+    const cleanHoroscope = extractHoroscopeText(horoscopeText);
 
+    // Chiamata all'API Groq (reflection.ts)
     fetch("/api/reflection", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sign, horoscope: horoscopeText ?? "", cardName: card.name, cardMeaning }),
+      body: JSON.stringify({ 
+        sign, 
+        horoscope: cleanHoroscope, 
+        cardName: card.name, 
+        cardMeaning 
+      }),
     })
-      .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json() as Promise<{ reflection: string; question: string }>; })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Status: ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         if (cancelled) return;
         if (data.reflection && data.question) {
           setGroqResult(data);
+          // Aggiorna cache
           try {
             const existing = localStorage.getItem("tarot_today");
-            if (existing) {
-              const parsed = JSON.parse(existing);
-              localStorage.setItem("tarot_today", JSON.stringify({ ...parsed, reflection: data.reflection, question: data.question }));
-            }
+            const parsed = existing ? JSON.parse(existing) : { date: today, cardId: card.id };
+            localStorage.setItem("tarot_today", JSON.stringify({ ...parsed, ...data }));
           } catch {}
-          updateHistoryEntry(today, { reflection: data.reflection, question: data.question });
+          updateHistoryEntry(today, data);
         }
       })
-      .catch(() => {})
-      .finally(() => { if (!cancelled) setGroqLoading(false); });
+      .catch((err) => console.error("Reflection Error:", err))
+      .finally(() => {
+        if (!cancelled) setGroqLoading(false);
+      });
 
     return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiTarotLoading]);
+  }, [apiTarotLoading, card, sign, apiTarotCards, horoscopeText]);
 
-  const isLoadingReflection = apiTarotLoading || groqLoading;
-
+  // Gestione animazioni flip carta
   useEffect(() => {
     if (isReturnVisit) return;
     const timers = [
@@ -117,8 +148,9 @@ export function CardReflectionScreen({
   const isLarge          = phase === "back" || phase === "flipping" || phase === "front";
   const isContentVisible = phase === "settling" || phase === "settled";
   const isSettled        = phase === "settled";
-
-  const cardImage      = CARD_IMAGES[card.id] ?? null;
+  const cardImage        = CARD_IMAGES[card.id] ?? null;
+  const isLoading        = apiTarotLoading || groqLoading;
+  
   const reflectionText = groqResult?.reflection ?? getPlaceholderReflection(card.name, sign);
   const questionText   = groqResult?.question   ?? getPlaceholderQuestion(card.name, sign);
 
@@ -129,140 +161,69 @@ export function CardReflectionScreen({
     setTiltY( (e.clientX - (rect.left + rect.width  / 2)) * 0.025);
   }, [isSettled, expanded]);
 
-  const handleMouseLeave = useCallback(() => { setTiltX(0); setTiltY(0); }, []);
-
-  const cardTransform =
-    !flipped  ? "rotate(-8deg) rotateY(0deg)"
-    : isSettled ? `rotate(-5deg) rotateX(${tiltX}deg) rotateY(${180 + tiltY}deg)`
-    :             "rotate(-8deg) rotateY(180deg)";
-
-  const cardTransition =
-    phase === "flipping" ? "transform 950ms ease-in-out"
-    : isSettled          ? "transform 100ms linear"
-    :                      "transform 600ms ease-in-out";
-
-  const paddingTop = isLarge
-    ? "calc(50vh - clamp(166px, 31vw, 215px) - 32px)"
-    : "clamp(100px, 14vh, 140px)";
-
-  const cardW = isLarge   ? "clamp(200px, 38vw, 260px)"
-    : expanded             ? "clamp(180px, 30vw, 280px)"
-    :                        "clamp(120px, 22vw, 150px)";
-  const cardH = isLarge   ? "clamp(333px, 63vw, 430px)"
-    : expanded             ? "clamp(300px, 50vw, 466px)"
-    :                        "clamp(200px, 36vw, 248px)";
+  const cardTransform = !flipped ? "rotate(-8deg) rotateY(0deg)" : isSettled ? `rotate(-5deg) rotateX(${tiltX}deg) rotateY(${180 + tiltY}deg)` : "rotate(-8deg) rotateY(180deg)";
+  const cardW = isLarge ? "clamp(200px, 38vw, 260px)" : expanded ? "clamp(180px, 30vw, 280px)" : "clamp(120px, 22vw, 150px)";
+  const cardH = isLarge ? "clamp(333px, 63vw, 430px)" : expanded ? "clamp(300px, 50vw, 466px)" : "clamp(200px, 36vw, 248px)";
 
   return (
     <>
       <style>{`
-        @keyframes shimmer-slide {
-          0%   { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-        @keyframes card-float {
-          0%   { transform: translateY(0px)   rotate(0deg); }
-          50%  { transform: translateY(-18px) rotate(0.6deg); }
-          100% { transform: translateY(0px)   rotate(0deg); }
-        }
-        .card-eye:hover {
-          cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='38' viewBox='0 0 38 38'%3E%3Cellipse cx='19' cy='19' rx='16' ry='9' fill='none' stroke='%23C9933A' stroke-width='1.8'/%3E%3Ccircle cx='19' cy='19' r='5.5' fill='none' stroke='%23C9933A' stroke-width='1.8'/%3E%3Ccircle cx='19' cy='19' r='2.2' fill='%23C9933A'/%3E%3C/svg%3E") 19 19, auto;
-        }
+        @keyframes shimmer-slide { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        @keyframes card-float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
       `}</style>
 
-      <div
-        className="w-full flex flex-col items-center"
-        style={{ paddingTop, paddingBottom: "80px", paddingLeft: "clamp(24px, 5vw, 40px)", paddingRight: "clamp(24px, 5vw, 40px)", transition: "padding-top 750ms cubic-bezier(0.4, 0, 0.2, 1)", minHeight: "100vh" }}
-      >
-        {/* ── Card ── */}
-        <div style={{ animation: isSettled ? "card-float 7.2s ease-in-out infinite" : "none", marginBottom: isLarge ? "0" : "clamp(24px, 4vh, 40px)", transition: "margin-bottom 700ms cubic-bezier(0.4, 0, 0.2, 1)", flexShrink: 0 }}>
-          <div
-            ref={cardRef}
-            className={isSettled ? "card-eye" : ""}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            onClick={() => isSettled && setExpanded(!expanded)}
-            style={{ width: cardW, height: cardH, perspective: "1200px", transition: "width 750ms cubic-bezier(0.4, 0, 0.2, 1), height 750ms cubic-bezier(0.4, 0, 0.2, 1)", cursor: isSettled ? undefined : "default" }}
-          >
-            <div style={{ width: "100%", height: "100%", position: "relative", transformStyle: "preserve-3d", transform: cardTransform, transition: cardTransition }}>
-              {/* Back face */}
-              <div style={{ position: "absolute", inset: 0, backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", borderRadius: isLarge ? "16px" : "12px", overflow: "hidden", border: "2px solid #C9933A", boxShadow: "0 20px 80px rgba(0,0,0,0.7)", transition: "border-radius 750ms cubic-bezier(0.4, 0, 0.2, 1)" }}>
-                <img src={imgCardBack} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} draggable={false} />
-              </div>
-              {/* Front face */}
-              <div style={{ position: "absolute", inset: 0, backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg)", borderRadius: isLarge ? "16px" : "12px", overflow: "hidden", border: "2px solid #C9933A", boxShadow: "0 20px 80px rgba(0,0,0,0.7), 0 0 40px rgba(201,147,58,0.2)", background: cardImage ? "transparent" : "linear-gradient(160deg, #2A2A3C 0%, #1E1E30 50%, #2A2A3C 100%)", display: cardImage ? "block" : "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", padding: cardImage ? "0" : "clamp(16px, 3vw, 28px)", transition: "border-radius 750ms cubic-bezier(0.4, 0, 0.2, 1)" }}>
-                {cardImage ? (
-                  <img src={cardImage} alt={card.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", userSelect: "none", pointerEvents: "none" }} draggable={false} />
-                ) : (
-                  <>
-                    <span style={{ fontFamily: "'Italiana', serif", fontSize: "clamp(18px, 3vw, 28px)", color: "#C9933A", letterSpacing: "0.15em" }}>{card.number}</span>
-                    <div className="flex flex-col items-center gap-3">
-                      <div style={{ width: "80%", height: "1px", background: "linear-gradient(90deg, transparent, #C9933A60, transparent)" }} />
-                      <span className="animate-glow-pulse" style={{ color: "#C9933A", fontSize: "clamp(20px, 4vw, 32px)" }}>✦</span>
-                      <div style={{ width: "80%", height: "1px", background: "linear-gradient(90deg, transparent, #C9933A60, transparent)" }} />
-                    </div>
-                    <span style={{ fontFamily: "'Italiana', serif", fontSize: "clamp(14px, 2.5vw, 22px)", color: "#C9933A", textAlign: "center", letterSpacing: "0.12em" }}>{card.name}</span>
-                  </>
-                )}
-              </div>
+      <div className="w-full flex flex-col items-center" style={{ minHeight: "100vh", paddingBottom: "100px", paddingTop: isLarge ? "15vh" : "8vh", transition: "padding 0.7s" }}>
+        
+        {/* Carta */}
+        <div 
+          ref={cardRef}
+          onClick={() => isSettled && setExpanded(!expanded)}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={() => { setTiltX(0); setTiltY(0); }}
+          style={{ 
+            width: cardW, height: cardH, perspective: "1200px", 
+            animation: isSettled ? "card-float 6s ease-in-out infinite" : "none",
+            transition: "all 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
+            marginBottom: isLarge ? "0" : "40px"
+          }}
+        >
+          <div style={{ width: "100%", height: "100%", position: "relative", transformStyle: "preserve-3d", transform: cardTransform, transition: "transform 0.8s" }}>
+            {/* Retro */}
+            <div style={{ position: "absolute", inset: 0, backfaceVisibility: "hidden", borderRadius: "12px", overflow: "hidden", border: "2px solid #C9933A" }}>
+              <img src={imgCardBack} alt="" className="w-full h-full object-cover" />
+            </div>
+            {/* Fronte */}
+            <div style={{ position: "absolute", inset: 0, backfaceVisibility: "hidden", transform: "rotateY(180deg)", borderRadius: "12px", overflow: "hidden", border: "2px solid #C9933A", background: "#1E1E30" }}>
+              {cardImage && <img src={cardImage} alt={card.name} className="w-full h-full object-cover" />}
             </div>
           </div>
         </div>
 
-        {/* ── Reflection content ── */}
-        <div
-          className="flex flex-col items-center w-full"
-          style={{ maxWidth: "640px", gap: "clamp(28px, 4vh, 44px)", opacity: isContentVisible ? 1 : 0, transform: isContentVisible ? "translateY(0)" : "translateY(32px)", pointerEvents: isContentVisible ? "auto" : "none", transition: isContentVisible ? "opacity 900ms 350ms ease-out, transform 900ms 350ms ease-out" : "none" }}
+        {/* Contenuto Testuale */}
+        <div 
+          className="flex flex-col items-center w-full px-6" 
+          style={{ maxWidth: "600px", opacity: isContentVisible ? 1 : 0, transform: isContentVisible ? "translateY(0)" : "translateY(20px)", transition: "all 0.8s 0.4s" }}
         >
-          {isReturnVisit && (
-            <p className="reflection-return-note" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "13px", color: "#A09CC0", letterSpacing: "0.1em", textAlign: "center", fontStyle: "italic" }}>
-              This is your card for today.
-            </p>
-          )}
+          <h2 style={{ fontFamily: "'Italiana', serif", fontSize: "32px", color: "#E8B96A", marginBottom: "8px" }}>{card.name}</h2>
+          <p style={{ fontSize: "10px", color: "#C9933A", letterSpacing: "0.2em", textTransform: "uppercase" }}>{sign} • {formatTodayShort()}</p>
 
-          <div className="flex flex-col items-center gap-3">
-            <h2 className="reflection-card-name" style={{ fontFamily: "'Italiana', serif", fontSize: "clamp(22px, 4vw, 38px)", color: "#E8B96A", fontWeight: 400, letterSpacing: "0.06em", margin: 0, textAlign: "center" }}>
-              {card.name}
-            </h2>
-            <div style={{ color: "#C9933A", fontSize: "13px", letterSpacing: "0.4em", opacity: 0.7 }}>✦ ✦ ✦</div>
-          </div>
-
-          <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
-            <span className="reflection-label-top" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "10px", color: "#C9933A", letterSpacing: "0.28em", textTransform: "uppercase", fontWeight: 500 }}>
-              Today's reflection
-            </span>
-            <span className="reflection-label-date" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "10px", color: "rgba(160,156,192)", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 300 }}>
-              {sign} · {formatTodayShort()}
-            </span>
-          </div>
-
-          <div className="w-full text-center">
-            {isLoadingReflection ? <Shimmer lines={4} /> : (
-              <p className="reflection-text" style={{ fontFamily: "'Italiana', serif", fontSize: "clamp(16px, 2.5vw, 21px)", color: "#F0EEF8", lineHeight: 1.9, fontStyle: "italic", fontWeight: 400, margin: 0 }}>
-                {reflectionText}
+          <div className="w-full mt-8 text-center">
+            {isLoading ? <Shimmer lines={4} /> : (
+              <p style={{ fontFamily: "'Italiana', serif", fontSize: "19px", color: "#F0EEF8", lineHeight: "1.8", fontStyle: "italic" }}>
+                "{reflectionText}"
               </p>
             )}
           </div>
 
-          <div style={{ width: "100%", height: "1px", background: "linear-gradient(90deg, transparent, rgba(201,147,58,0.3), transparent)" }} />
+          <hr style={{ width: "60px", border: "0.5px solid rgba(201,147,58,0.3)", margin: "30px 0" }} />
 
           <div className="w-full text-center">
-            <span className="reflection-question-label" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "10px", color: "#C9933A", letterSpacing: "0.22em", textTransform: "uppercase", display: "block", marginBottom: "10px", fontWeight: 500 }}>
-              A question for you
-            </span>
-            {isLoadingReflection ? <Shimmer lines={2} /> : (
-              <p className="reflection-question-text" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "clamp(14px, 2vw, 17px)", color: "rgba(240,238,248,0.75)", lineHeight: 1.85, fontStyle: "italic", fontWeight: 300, letterSpacing: "0.02em", margin: 0 }}>
+            <span style={{ fontSize: "10px", color: "#C9933A", letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: "12px" }}>A question for you</span>
+            {isLoading ? <Shimmer lines={2} /> : (
+              <p style={{ fontFamily: "'Raleway', sans-serif", fontSize: "16px", color: "rgba(160,156,192,0.9)", lineHeight: "1.6" }}>
                 {questionText}
               </p>
             )}
-          </div>
-
-          <div className="flex flex-col items-center gap-2">
-            <p className="reflection-footer-primary" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "14px", color: "#A09CC0", letterSpacing: "0.1em", textAlign: "center", fontWeight: 300, margin: 0 }}>
-              Carry this with you today.
-            </p>
-            <p className="reflection-footer-secondary" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "14px", color: "rgba(160,156,192,0.80)", letterSpacing: "0.08em", textAlign: "center", fontWeight: 300, margin: 0 }}>
-              {isReturnVisit ? "Come back tomorrow for a new reading 🌙" : "We'll be here again tomorrow. 🌙"}
-            </p>
           </div>
         </div>
       </div>
