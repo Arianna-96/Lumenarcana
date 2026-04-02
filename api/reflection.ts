@@ -1,13 +1,3 @@
-/**
- * Vercel Edge Function — /api/reflection
- *
- * Receives: POST { sign, horoscope, cardName, cardMeaning }
- * Returns:  { reflection: string, question: string }
- *
- * The GROQ_API_KEY must be set as an environment variable in Vercel project settings.
- * Never expose this key in frontend code.
- */
-
 export const config = { runtime: "edge" };
 
 const SYSTEM_PROMPT =
@@ -46,8 +36,8 @@ The reflection should include at least one concrete, actionable insight — not 
 Avoid vague cosmic language — ground the message in real human experience.
 Length: 3-5 sentences for the reflection.
 
-The journaling question must be specific and practical. It should help the person reflect on something concrete in their actual life — relationships, decisions, emotions, habits. Someone should be able to open their journal and start writing immediately after reading it. One or two sentences only. It shopuld be based on the reflection.
-The question must NOT always start with "What". Vary the opening — sometimes start with "Where", "When", "Who", "How", "Which", "Think about", "If you", "Imagine", or make it a direct statement that implies a question. Never use the same sentence structure twice in 3 days.
+The journaling question must be specific and practical. It should help the person reflect on something concrete in their actual life — relationships, decisions, emotions, habits. Someone should be able to open their journal and start writing immediately after reading it. One or two sentences only. It should be based on the reflection.
+The question must NOT always start with "What". Vary the opening — sometimes start with "Where", "When", "Who", "How", "Which", "Think about", "If you", "Imagine", or make it a direct statement that implies a question. Never use the same sentence structure twice.
 
 Write ONLY this JSON:
 {
@@ -117,9 +107,24 @@ export default async function handler(req: Request): Promise<Response> {
 
     const rawContent = groqData.choices?.[0]?.message?.content ?? "{}";
 
-    // Strip any accidental markdown fences before parsing
-    const cleaned = rawContent.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
-    const parsed = JSON.parse(cleaned) as { reflection: string; question: string };
+    const cleaned = rawContent
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
+
+    // sanitizza caratteri di controllo illegali
+    const sanitized = cleaned.replace(/[\u0000-\u001F\u007F]/g, (char) => {
+      if (char === "\n") return "\\n";
+      if (char === "\r") return "\\r";
+      if (char === "\t") return "\\t";
+      return "";
+    });
+
+    const parsed = JSON.parse(sanitized) as { reflection: string; question: string };
+
+    if (!parsed.reflection || !parsed.question) {
+      throw new Error("Missing reflection or question in Groq response");
+    }
 
     return new Response(JSON.stringify(parsed), {
       status: 200,
