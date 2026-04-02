@@ -56,7 +56,6 @@ export function CardReflectionScreen({
 
   useEffect(() => {
     if (apiTarotLoading) return;
-    if (horoscopeText === null) return;
 
     const today = new Date().toDateString();
     try {
@@ -100,7 +99,7 @@ export function CardReflectionScreen({
 
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiTarotLoading, horoscopeText]);
+  }, [apiTarotLoading]);
 
   const isLoadingReflection = apiTarotLoading || groqLoading;
 
@@ -231,7 +230,7 @@ export function CardReflectionScreen({
             <span className="reflection-label-top" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "10px", color: "#C9933A", letterSpacing: "0.28em", textTransform: "uppercase", fontWeight: 500 }}>
               Today's reflection
             </span>
-            <span className="reflection-label-date" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "10px", color: "rgba(160,156,192,0.5)", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 300 }}>
+            <span className="reflection-label-date" style={{ fontFamily: "'Raleway', sans-serif", fontSize: "10px", color: "rgba(160,156,192)", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 300 }}>
               {sign} · {formatTodayShort()}
             </span>
           </div>
