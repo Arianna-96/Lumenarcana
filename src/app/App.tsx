@@ -124,7 +124,7 @@ export default function App() {
     fetch(`/api/horoscope?sign=${zodiacSign.toLowerCase()}`, { signal: controller.signal })
       .then((res) => res.json())
       .then((data) => {
-        const d = data as { data?: { horoscope_data?: string } };
+        const d = data as { data?: { horoscope?: string } };
         setHoroscopeText(d?.data?.horoscope ?? "");
       })
       .catch(() => setHoroscopeText(""))
