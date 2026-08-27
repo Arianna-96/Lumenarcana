@@ -89,7 +89,6 @@ console.log("[/api/reflection] incoming:", {
           { role: "user",   content: buildUserPrompt(sign, horoscope, cardName, cardMeaning) },
         ],
         temperature: 1.0,
-        max_tokens: 800,
       }),
     });
 
