@@ -82,7 +82,7 @@ export default async function handler(req: Request): Promise<Response> {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "qwen/qwen3-32b",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user",   content: buildUserPrompt(sign, horoscope, cardName, cardMeaning) },
