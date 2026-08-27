@@ -80,7 +80,7 @@ export async function POST(req: Request): Promise<Response> {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "llama3-70b-8192",
+        model: "openai/gpt-oss-20b",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user",   content: buildUserPrompt(sign, horoscope, cardName, cardMeaning) },
