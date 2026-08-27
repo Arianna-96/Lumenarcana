@@ -45,13 +45,6 @@ Write ONLY this JSON:
 }
 
 export async function POST(req: Request): Promise<Response> {
-  if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     return new Response(JSON.stringify({ error: "GROQ_API_KEY not configured" }), {
@@ -86,7 +79,7 @@ export async function POST(req: Request): Promise<Response> {
           { role: "user",   content: buildUserPrompt(sign, horoscope, cardName, cardMeaning) },
         ],
         temperature: 1.0,
-        max_tokens: 400,
+        max_tokens: 800,
       }),
     });
 
@@ -105,12 +98,23 @@ export async function POST(req: Request): Promise<Response> {
 
     const rawContent = groqData.choices?.[0]?.message?.content ?? "{}";
 
+    console.log("[/api/reflection] raw content:", rawContent);
+
     const cleaned = rawContent
       .replace(/^```(?:json)?\s*/i, "")
       .replace(/\s*```$/i, "")
       .trim();
 
-    const parsed = JSON.parse(cleaned) as { reflection: string; question: string };
+    let parsed: { reflection: string; question: string };
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch {
+      console.error("[/api/reflection] Parse error, raw content:", rawContent);
+      return new Response(JSON.stringify({ error: "Parse error" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     return new Response(JSON.stringify(parsed), {
       status: 200,
