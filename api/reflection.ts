@@ -67,6 +67,14 @@ export async function POST(req: Request): Promise<Response> {
 
   const { sign, horoscope, cardName, cardMeaning } = body;
 
+// ── log temporaneo ──
+console.log("[/api/reflection] incoming:", { 
+  sign, 
+  cardName, 
+  horoscope: horoscope || "EMPTY",
+  horoscopeLength: horoscope?.length ?? 0 
+});
+
   try {
     const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
