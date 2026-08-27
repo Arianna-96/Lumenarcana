@@ -56,6 +56,7 @@ export function CardReflectionScreen({
 
   useEffect(() => {
     if (apiTarotLoading) return;
+    if (!horoscopeText) return;
 
     const today = new Date().toDateString();
     try {
@@ -77,7 +78,7 @@ export function CardReflectionScreen({
     fetch("/api/reflection", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sign, horoscope: horoscopeText ?? "", cardName: card.name, cardMeaning }),
+      body: JSON.stringify({ sign, horoscope: horoscopeText, cardName: card.name, cardMeaning }),
     })
       .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json() as Promise<{ reflection: string; question: string }>; })
       .then((data) => {
@@ -99,7 +100,7 @@ export function CardReflectionScreen({
 
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiTarotLoading]);
+  }, [apiTarotLoading, horoscopeText]);
 
   const isLoadingReflection = apiTarotLoading || groqLoading;
 
