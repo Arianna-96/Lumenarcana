@@ -19,23 +19,25 @@ function buildUserPrompt(
 ): string {
   const style = OPENING_STYLES[Math.floor(Math.random() * OPENING_STYLES.length)];
 
-  return `The user is a ${sign}. Today's horoscope: "${horoscope}"
+  return `The user is a ${sign}.
+
+Today's horoscope: "${horoscope}"
 
 They drew: ${cardName}
 Card meaning: "${cardMeaning}"
 Opening instruction: ${style}
 
-IMPORTANT: The horoscope is the most important element. It changes every day and must drive the reflection. The card meaning is the lens, the horoscope is the subject. If you ignore the horoscope the reflection is wrong.
+RULE 1: The reflection MUST reference at least one specific detail from the horoscope above.
+RULE 2: The reflection MUST also connect to the specific energy of ${cardName} — not generically, but using its core themes: what this card represents symbolically and emotionally.
+RULE 3: The card and horoscope must feel like two voices saying the same thing. Find the thread that connects them.
+RULE 4: Do not ignore either element. A reflection that only uses one of the two is wrong.
 
-Tone: warm, poetic, personal. Metaphors welcome but keep sentences short and clear.
-Do not always start with the zodiac sign name as a direct address.
-Avoid overly elaborate compound metaphors — one image per sentence is enough.
-The reflection should include at least one concrete, actionable insight — not just imagery. Something the person can actually think about or do today.
-Avoid vague cosmic language — ground the message in real human experience.
-Length: 3-5 sentences for the reflection.
+Tone: warm, poetic, personal. Short clear sentences. One image per sentence max.
+No vague cosmic language. At least one concrete actionable insight.
+3-5 sentences for the reflection.
 
-The journaling question must be specific and practical. It should help the person reflect on something concrete in their actual life — relationships, decisions, emotions, habits. Someone should be able to open their journal and start writing immediately after reading it. One or two sentences only. It should be based on the reflection.
-The question must NOT always start with "What". Vary the opening — sometimes start with "Where", "When", "Who", "How", "Which", "Think about", "If you", "Imagine", or make it a direct statement that implies a question. Never use the same sentence structure twice.
+The question must be specific and practical. Based on both the card and horoscope together. One or two sentences.
+Do NOT start with "What". Vary: "Where", "When", "Who", "How", "If you", "Imagine", "Think about".
 
 Write ONLY this JSON:
 {
